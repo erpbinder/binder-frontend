@@ -5,16 +5,14 @@ import {
   FaSearch, 
   FaChevronDown, 
   FaChevronUp, 
-  FaRobot, 
-  FaPaperPlane, 
-  FaUser,
   FaQuestionCircle,
   FaTags,
   FaFilter,
   FaArrowLeft,
-  FaTimes,
-  FaComments
+  FaRobot,
+  FaUser
 } from 'react-icons/fa';
+import Chatbot from '../components/Chatbot'; // Import the Chatbot component
 import './Community.css';
 
 const Community = () => {
@@ -22,11 +20,6 @@ const Community = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [expandedFAQ, setExpandedFAQ] = useState(null);
-  const [chatMessages, setChatMessages] = useState([
-    { id: 1, text: "Hello! I'm here to help you with any questions about our community. How can I assist you today?", isBot: true, timestamp: new Date() }
-  ]);
-  const [currentMessage, setCurrentMessage] = useState('');
-  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const categories = [
     { id: 'all', label: 'All Questions', icon: FaQuestionCircle },
@@ -158,7 +151,6 @@ const Community = () => {
       question: "How do I report a bug?",
       answer: "To report a bug, use the 'Report Bug' feature in the Help menu, or email us at bugs@company.com with detailed information about the issue."
     },
-    // Add more FAQ items...
     {
       id: 21,
       category: 'general',
@@ -202,59 +194,9 @@ const Community = () => {
     setExpandedFAQ(expandedFAQ === id ? null : id);
   };
 
-  const sendMessage = () => {
-    if (currentMessage.trim()) {
-      const userMessage = {
-        id: Date.now(),
-        text: currentMessage,
-        isBot: false,
-        timestamp: new Date()
-      };
-
-      setChatMessages(prev => [...prev, userMessage]);
-
-      setTimeout(() => {
-        const botResponse = {
-          id: Date.now() + 1,
-          text: getBotResponse(currentMessage),
-          isBot: true,
-          timestamp: new Date()
-        };
-        setChatMessages(prev => [...prev, botResponse]);
-      }, 1000);
-
-      setCurrentMessage('');
-    }
-  };
-
-  const getBotResponse = (message) => {
-    const lowerMessage = message.toLowerCase();
-    
-    if (lowerMessage.includes('account') || lowerMessage.includes('login')) {
-      return "For account-related questions, you can find help in our Account FAQ section. Would you like me to show you specific account management topics?";
-    }
-    if (lowerMessage.includes('billing') || lowerMessage.includes('payment')) {
-      return "For billing inquiries, please check our Billing FAQ section. I can help you with payment methods, subscription changes, or refund policies.";
-    }
-    if (lowerMessage.includes('technical') || lowerMessage.includes('bug')) {
-      return "For technical issues, please refer to our Technical FAQ section. If you're experiencing a specific problem, you can report it through our bug reporting system.";
-    }
-    if (lowerMessage.includes('support') || lowerMessage.includes('help')) {
-      return "I'm here to help! You can browse our FAQ sections or contact our support team directly. What specific area do you need assistance with?";
-    }
-    
-    return "Thank you for your question! I'd recommend browsing our FAQ sections above or contacting our support team for more detailed assistance. Is there a specific category you'd like to explore?";
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      sendMessage();
-    }
-  };
-
   return (
     <div className="community-page">
-      {/* Header with back button */}
+      {/* Header */}
       <div className="community-page-header">
         <div className="header-content">
           <h1 className="community-page-title">Community Help Center</h1>
@@ -315,57 +257,8 @@ const Community = () => {
         </div>
       </div>
 
-      {/* Floating Chat Icon */}
-      <div className="floating-chat-icon" onClick={() => setIsChatOpen(!isChatOpen)}>
-        <FaComments />
-      </div>
-
-      {/* Chatbot Modal */}
-      {isChatOpen && (
-        <div className="chatbot-modal">
-          <div className="chatbot-container">
-            <div className="chatbot-header">
-              <div className="chatbot-header-left">
-                <FaRobot className="chatbot-icon" />
-                <span>Community Assistant</span>
-              </div>
-              <button className="close-chat" onClick={() => setIsChatOpen(false)}>
-                <FaTimes />
-              </button>
-            </div>
-
-            <div className="chat-messages">
-              {chatMessages.map(message => (
-                <div key={message.id} className={`message ${message.isBot ? 'bot-message' : 'user-message'}`}>
-                  <div className="message-avatar">
-                    {message.isBot ? <FaRobot /> : <FaUser />}
-                  </div>
-                  <div className="message-content">
-                    <div className="message-text">{message.text}</div>
-                    <div className="message-time">
-                      {message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="chat-input">
-              <input
-                type="text"
-                placeholder="Ask me anything..."
-                value={currentMessage}
-                onChange={(e) => setCurrentMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
-                className="message-input"
-              />
-              <button onClick={sendMessage} className="send-button">
-                <FaPaperPlane />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Chatbot Component */}
+      <Chatbot />
     </div>
   );
 };
